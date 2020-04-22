@@ -32,7 +32,13 @@ COPY --from=dependencies /dependencies/ttrss ${APACHE_DOCUMENT_ROOT}
 # [0] https://github.com/moby/moby/issues/31243#issuecomment-406879017
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -y --no-install-recommends curl \
+	&& apt-get install -y --no-install-recommends \
+		libxml2-dev \
+		zlib1g-dev \
+		libpng-dev \
+		libjpeg-dev \
+		libonig-dev \
+		libzip-dev \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& usermod -a -G tty ${APACHE_RUN_USER} \
 	&& sed -i "s/Listen 80/Listen ${APACHE_PORT}/g" /etc/apache2/ports.conf \
@@ -46,9 +52,31 @@ RUN set -ex \
 	&& chown -R ${APACHE_RUN_USER}:${APACHE_RUN_USER} ./cache/ \
 	&& chown -R ${APACHE_RUN_USER}:${APACHE_RUN_USER} ./feed-icons/ \
 	&& chown -R ${APACHE_RUN_USER}:${APACHE_RUN_USER} ./lock/ \
-	&& ln -s /volume/plugins ./plugins.local
-
-# TODO: Install PHP dependencies.
+	&& ln -s /volume/plugins ./plugins.local \
+	&& { \
+		echo 'opcache.enable=1'; \
+		echo 'opcache.interned_strings_buffer=8'; \
+		echo 'opcache.max_accelerated_files=10000'; \
+		echo 'opcache.memory_consumption=128'; \
+		echo 'opcache.save_comments=1'; \
+		echo 'opcache.revalidate_freq=1'; \
+	} > /usr/local/etc/php/conf.d/opcache-recommended.ini \
+	&& docker-php-ext-install -j "$(nproc)" \
+		dom \
+		fileinfo \
+		gd \
+		intl \
+		json \
+		mbstring \
+		mysqli \
+		opcache \
+		pcntl \
+		pdo_mysql \
+		posix \
+		session \
+		xml \
+		zip \
+	&& echo 'memory_limit=512M' > /usr/local/etc/php/conf.d/memory-limit.ini
 
 # Set a custom entrypoint.
 COPY entrypoint.sh /entrypoint.sh
