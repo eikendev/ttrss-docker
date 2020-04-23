@@ -31,15 +31,6 @@ COPY --from=dependencies /dependencies/ttrss ${APACHE_DOCUMENT_ROOT}
 # set to stdout and stderr.
 # [0] https://github.com/moby/moby/issues/31243#issuecomment-406879017
 RUN set -ex \
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends \
-		libxml2-dev \
-		zlib1g-dev \
-		libpng-dev \
-		libjpeg-dev \
-		libonig-dev \
-		libzip-dev \
-	&& rm -rf /var/lib/apt/lists/* \
 	&& usermod -a -G tty ${APACHE_RUN_USER} \
 	&& sed -i "s/Listen 80/Listen ${APACHE_PORT}/g" /etc/apache2/ports.conf \
 	&& sed -i "s/:80>/:${APACHE_PORT}>/g" /etc/apache2/sites-available/000-default.conf \
@@ -52,6 +43,14 @@ RUN set -ex \
 	&& chown -R ${APACHE_RUN_USER}:${APACHE_RUN_USER} ./cache/ \
 	&& chown -R ${APACHE_RUN_USER}:${APACHE_RUN_USER} ./feed-icons/ \
 	&& chown -R ${APACHE_RUN_USER}:${APACHE_RUN_USER} ./lock/ \
+	&& mkdir -p /volume/configuration \
+	&& chown ${APACHE_RUN_USER}:${APACHE_RUN_USER} /volume/configuration \
+	&& chmod 750 /volume/configuration \
+	&& rm -f ./config.php \
+	&& mkdir -p /volume/plugins \
+	&& chown root:${APACHE_RUN_USER} /volume/plugins \
+	&& chmod 750 /volume/plugins \
+	&& rm -rf ./plugins.local \
 	&& ln -s /volume/plugins ./plugins.local \
 	&& { \
 		echo 'opcache.enable=1'; \
@@ -61,6 +60,16 @@ RUN set -ex \
 		echo 'opcache.save_comments=1'; \
 		echo 'opcache.revalidate_freq=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini \
+	&& echo 'memory_limit=512M' > /usr/local/etc/php/conf.d/memory-limit.ini \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		libxml2-dev \
+		zlib1g-dev \
+		libpng-dev \
+		libjpeg-dev \
+		libonig-dev \
+		libzip-dev \
+	&& rm -rf /var/lib/apt/lists/* \
 	&& docker-php-ext-install -j "$(nproc)" \
 		dom \
 		fileinfo \
@@ -75,8 +84,7 @@ RUN set -ex \
 		posix \
 		session \
 		xml \
-		zip \
-	&& echo 'memory_limit=512M' > /usr/local/etc/php/conf.d/memory-limit.ini
+		zip
 
 # Set a custom entrypoint.
 COPY entrypoint.sh /entrypoint.sh
