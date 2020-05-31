@@ -11,7 +11,7 @@ RUN set -xe \
 
 FROM php:apache
 
-VOLUME /volume/configuration /volume/plugins
+VOLUME /volume/configuration /volume/plugins /volume/themes
 
 ENV APACHE_PORT=8080 \
     APACHE_RUN_USER=www-data \
@@ -52,6 +52,11 @@ RUN set -ex \
 	&& chmod 750 /volume/plugins \
 	&& rm -rf ./plugins.local \
 	&& ln -s /volume/plugins ./plugins.local \
+	&& mkdir -p /volume/themes \
+	&& chown root:${APACHE_RUN_USER} /volume/themes \
+	&& chmod 750 /volume/themes \
+	&& rm -rf ./themes.local \
+	&& ln -s /volume/themes ./themes.local \
 	&& { \
 		echo 'opcache.enable=1'; \
 		echo 'opcache.interned_strings_buffer=8'; \
