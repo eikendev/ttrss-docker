@@ -94,4 +94,5 @@ RUN set -ex \
 # Set a custom entrypoint.
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 540 /entrypoint.sh
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["apache2-foreground"]
