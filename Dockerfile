@@ -46,7 +46,7 @@ RUN set -ex \
 	&& mkdir -p /volume/configuration \
 	&& chown ${APACHE_RUN_USER}:${APACHE_RUN_USER} /volume/configuration \
 	&& chmod 750 /volume/configuration \
-	&& rm -f ./config.php \
+	&& ln -s -f /volume/configuration/config.php ./config.php \
 	&& mkdir -p /volume/plugins \
 	&& chown root:${APACHE_RUN_USER} /volume/plugins \
 	&& chmod 750 /volume/plugins \
