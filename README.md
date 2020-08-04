@@ -1,4 +1,4 @@
-[![Docker Pulls](https://img.shields.io/docker/pulls/eikendev/ttrss-docker)](https://hub.docker.com/r/eikendev/ttrss-docker)
+[![Docker Pulls](https://img.shields.io/docker/pulls/eikendev/ttrss)](https://hub.docker.com/r/eikendev/ttrss)
 
 ## About
 
