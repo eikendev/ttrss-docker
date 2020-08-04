@@ -1,3 +1,5 @@
+[![Docker Pulls](https://img.shields.io/docker/pulls/eikendev/ttrss-docker)](https://hub.docker.com/r/eikendev/ttrss-docker)
+
 ## About
 
 This is my personal [Docker](https://www.docker.com/) image for [Tiny Tiny RSS](https://tt-rss.org/).
