@@ -9,7 +9,7 @@ RUN set -xe \
 	&& mkdir -p /dependencies/ttrss \
 	&& tar -xf /ttrss.tar.gz --strip-components=1 -C /dependencies/ttrss
 
-FROM php:apache
+FROM php:7-apache
 
 VOLUME /volume/configuration /volume/plugins /volume/themes
 
