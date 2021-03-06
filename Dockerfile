@@ -9,7 +9,7 @@ RUN set -xe \
 	&& mkdir -p /dependencies/ttrss \
 	&& tar -xf /ttrss.tar.gz --strip-components=1 -C /dependencies/ttrss
 
-FROM php:7-apache
+FROM php:8-apache
 
 VOLUME /volume/configuration /volume/plugins /volume/themes
 
@@ -74,21 +74,15 @@ RUN set -ex \
 		libjpeg-dev \
 		libonig-dev \
 		libzip-dev \
-	&& rm -rf /var/lib/apt/lists/* \
+	&& rm -rf /var/lib/apt/lists/*
+
+RUN set -ex \
 	&& docker-php-ext-install -j "$(nproc)" \
-		dom \
-		fileinfo \
 		gd \
 		intl \
-		json \
-		mbstring \
-		mysqli \
 		opcache \
 		pcntl \
 		pdo_mysql \
-		posix \
-		session \
-		xml \
 		zip
 
 # Set a custom entrypoint.
